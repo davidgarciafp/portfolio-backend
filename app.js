@@ -12,8 +12,6 @@ app.use(express.json());  // Para parsear el body en formato JSON
 
 // Conectar a MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
 })
 .then(() => console.log('🟢 Conectado a MongoDB'))
 .catch(err => console.error('🔴 Error MongoDB:', err));
