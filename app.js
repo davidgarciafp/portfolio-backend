@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const projectRoutes = require('./routes/projectRoutes');  // Importa las rutas de proyectos
+const contactRoutes = require('./routes/contactRoutes');  // Importar las rutas de contacto
+const nodemailer = require('nodemailer');  // Importar nodemailer
 
 const app = express();
 
@@ -18,10 +20,29 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Usar las rutas
 app.use('/api', projectRoutes);  // Todas las rutas de proyectos estarán bajo /api
+app.use('/api', contactRoutes);  // Todas las rutas de contacto estarán bajo /api
 
 // Ruta de prueba
 app.get('/', (req, res) => {
   res.send('API del portfolio funcionando');
+});
+
+// Ruta de prueba para verificar la configuración de correo
+app.get('/api/test-email', (req, res) => {
+  const config = {
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: '********' // Ocultamos la contraseña por seguridad
+    },
+    recipient: process.env.EMAIL_RECIPIENT
+  };
+  
+  res.json({
+    message: 'Configuración de correo electrónico',
+    config
+  });
 });
 
 // Puerto
