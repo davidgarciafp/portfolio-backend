@@ -12,7 +12,11 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
-
+router.get('/contact', (req, res) => {
+  res.json({
+    message: 'El endpoint de contacto está funcionando correctamente. Usa POST para enviar un mensaje.'
+  });
+});
 // Ruta para manejar el envío del formulario de contacto
 router.post('/contact', async (req, res) => {
   try {
