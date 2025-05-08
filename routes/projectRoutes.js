@@ -57,6 +57,9 @@ router.post('/projects', async (req, res) => {
 // Ruta para actualizar un proyecto existente
 router.put('/projects/:id', async (req, res) => {
   try {
+    console.log('Actualizando proyecto con ID:', req.params.id);
+    console.log('Datos recibidos:', req.body);
+    
     const { name, description, technologies, url, imageUrl, github } = req.body;
     
     // Validar datos
@@ -64,23 +67,35 @@ router.put('/projects/:id', async (req, res) => {
       return res.status(400).json({ message: 'Nombre, descripción y tecnologías son obligatorios' });
     }
     
+    // Asegurarse de que technologies sea un array
+    const techArray = Array.isArray(technologies) ? technologies : technologies.split(',').map(tech => tech.trim());
+    
+    const updateData = {
+      name,
+      description,
+      technologies: techArray,
+      url: url || '',
+      imageUrl: imageUrl || '',
+      github: github || ''
+    };
+    
+    console.log('Datos a actualizar:', updateData);
+    
     const updatedProject = await Project.findByIdAndUpdate(
       req.params.id,
-      {
-        name,
-        description,
-        technologies,
-        url,
-        imageUrl,
-        github
-      },
-      { new: true } // Devuelve el documento actualizado
+      updateData,
+      { 
+        new: true, // Devuelve el documento actualizado
+        runValidators: true // Ejecuta los validadores del esquema
+      }
     );
     
     if (!updatedProject) {
+      console.log('Proyecto no encontrado');
       return res.status(404).json({ message: 'Proyecto no encontrado' });
     }
     
+    console.log('Proyecto actualizado:', updatedProject);
     res.json(updatedProject);
   } catch (error) {
     console.error('Error al actualizar el proyecto:', error);
