@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Habilitar CORS para permitir solicitudes desde tu frontend
+CORS(app, resources={r"/*": {"origins": "*"}})  # Habilitar CORS para permitir solicitudes desde tu frontend
 
 # Configuración del correo electrónico
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
@@ -18,7 +18,12 @@ EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
 EMAIL_USER = os.getenv('EMAIL_USER', 'tu_correo@gmail.com')  # Tu correo electrónico
 EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', '')  # Tu contraseña o clave de aplicación
 EMAIL_RECIPIENT = os.getenv('EMAIL_RECIPIENT', 'davidgf444@gmail.com')  # Correo donde recibirás los mensajes
-
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({
+        'status': 'online',
+        'message': 'API del formulario de contacto está funcionando. Usa POST /api/contact para enviar mensajes.'
+    })
 @app.route('/api/contact', methods=['POST'])
 def contact():
     try:
@@ -38,12 +43,12 @@ def contact():
         
         # Crear mensaje de correo electrónico
         msg = MIMEMultipart()
-        msg['From'] = EMAIL_USER
+        msg['From'] = f"Formulario de Contacto <{EMAIL_USER}>"
         msg['To'] = EMAIL_RECIPIENT
         msg['Subject'] = f"Formulario de contacto: {subject}"
         
-        # Construir el cuerpo del mensaje
-        body = f"""
+        # Construir el cuerpo del mensaje en texto plano
+        text_body = f"""
         Has recibido un nuevo mensaje desde el formulario de contacto de tu portfolio:
         
         Nombre: {name}
@@ -54,7 +59,19 @@ def contact():
         {message}
         """
         
-        msg.attach(MIMEText(body, 'plain'))
+        # Construir el cuerpo del mensaje en HTML
+        html_body = f"""
+        <h2>Nuevo mensaje de contacto</h2>
+        <p><strong>Nombre:</strong> {name}</p>
+        <p><strong>Email:</strong> {email}</p>
+        <p><strong>Asunto:</strong> {subject}</p>
+        <p><strong>Mensaje:</strong></p>
+        <p>{message.replace(chr(10), '<br>')}</p>
+        """
+        
+        # Adjuntar versiones de texto y HTML
+        msg.attach(MIMEText(text_body, 'plain'))
+        msg.attach(MIMEText(html_body, 'html'))
         
         # Enviar correo electrónico
         with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as server:
@@ -73,6 +90,8 @@ def contact():
             'success': False,
             'message': 'Hubo un error al enviar tu mensaje. Por favor, intenta de nuevo más tarde.'
         }), 500
-
+    
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    # Obtener el puerto del entorno (Dokku lo asignará) o usar 5000 por defecto
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

@@ -1,1 +1,1 @@
-web: gunicorn contact_form:app
+web: gunicorn --bind 0.0.0.0:$PORT contact_form:app
