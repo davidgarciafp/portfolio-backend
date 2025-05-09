@@ -1,1 +1,1 @@
-web: npm start
+web: gunicorn contact_form:app

@@ -1,0 +1,29 @@
+{
+  "name": "portfolio-contact-form",
+  "description": "Backend API for portfolio contact form",
+  "keywords": [
+    "flask",
+    "python",
+    "contact form"
+  ],
+  "env": {
+    "EMAIL_HOST": {
+      "description": "SMTP server host",
+      "value": "smtp.gmail.com"
+    },
+    "EMAIL_PORT": {
+      "description": "SMTP server port",
+      "value": "587"
+    },
+    "EMAIL_USER": {
+      "description": "Email address to send from"
+    },
+    "EMAIL_PASSWORD": {
+      "description": "Email password or app password"
+    },
+    "EMAIL_RECIPIENT": {
+      "description": "Email address to receive contact form submissions",
+      "value": "davidgf444@gmail.com"
+    }
+  }
+}
