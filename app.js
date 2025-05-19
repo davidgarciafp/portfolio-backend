@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const projectRoutes = require('./routes/projectRoutes');  // Importa las rutas de proyectos
 const contactRoutes = require('./routes/contactRoutes');  // Importar las rutas de contacto
+const authRoutes = require('./routes/authRoutes');  // Importar las rutas de autenticación
 const nodemailer = require('nodemailer');  // Importar nodemailer
 
 const app = express();
@@ -21,6 +22,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Usar las rutas
 app.use('/api', projectRoutes);  // Todas las rutas de proyectos estarán bajo /api
 app.use('/api', contactRoutes);  // Todas las rutas de contacto estarán bajo /api
+app.use('/api/auth', authRoutes); // Todas las rutas de autenticación estarán bajo /api/auth
 
 // Ruta de prueba
 app.get('/', (req, res) => {
